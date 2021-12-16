@@ -32,6 +32,9 @@ module.exports = {
       admin: {
         type: Sequelize.BOOLEAN,
       },
+      estateAgent: {
+        type: Sequelize.BOOLEAN,
+      },
       picture: {
         type: Sequelize.STRING,
       },

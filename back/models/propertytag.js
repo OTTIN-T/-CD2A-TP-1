@@ -14,9 +14,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   PropertyTag.init(
-    {
-      name: DataTypes.STRING,
-    },
+    {},
     {
       sequelize,
       modelName: "PropertyTag",

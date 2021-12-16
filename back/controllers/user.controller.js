@@ -2,11 +2,24 @@ const User = require("../models").User;
 const passwordService = require("../services/password.service");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const tokenService = require("../services/token.service");
+const bodyService = require("../services/body.service");
 
-exports.user_add = (req, res, next) => {
+exports.user_add = async (req, res, next) => {
+  let bodyValidate = req.body;
+  bodyValidate = await bodyService.bodyValidator(bodyValidate);
+
+  if (!bodyValidate) {
+    return res.status(400).json({ message: "Field required" });
+  }
+
+  if (req.file) {
+    bodyValidate.picture = `public/upload/user/${req.file.filename.trim()}`;
+  }
+
   User.findOne({
     where: {
-      email: req.body.email,
+      email: bodyValidate.email,
     },
   })
     .then((user) => {
@@ -14,30 +27,37 @@ exports.user_add = (req, res, next) => {
         return res.status(409).json({ message: "Email exist" });
       }
 
-      passwordService.verifyPassword(req.body.password).then((result) => {
-        if (result === false) {
-          return res.status(400).json({ message: "Strong password require" });
-        }
-
-        let newUser = req.body;
-        newUser.password = result;
-
-        User.create(newUser)
-          .then((userCreated) => {
-            res.status(201).json(userCreated);
-          })
-          .catch((error) => {
-            console.log("error create", error);
-          });
-      });
+      passwordService
+        .verifyPassword(bodyValidate.password)
+        .then((result) => {
+          if (result === false) {
+            return res.status(400).json({ message: "Strong password require" });
+          }
+          bodyValidate.password = result;
+          User.create(bodyValidate)
+            .then((userCreated) => {
+              res.status(201).json(userCreated);
+            })
+            .catch((error) => {
+              console.log("error create", error);
+            });
+        })
+        .catch((err) => console.log("error find", err));
     })
     .catch((err) => console.log("error find", err));
 };
 
-exports.user_login = (req, res, next) => {
+exports.user_login = async (req, res, next) => {
+  let bodyValidate = req.body;
+  bodyValidate = await bodyService.bodyValidator(bodyValidate);
+
+  if (!bodyValidate) {
+    return res.status(400).json({ message: "Field required" });
+  }
+
   User.findOne({
     where: {
-      email: req.body.email,
+      email: bodyValidate.email,
     },
   })
     .then((user) => {
@@ -45,7 +65,7 @@ exports.user_login = (req, res, next) => {
         return res.status(401).json({ message: "Email or password invalid" });
       }
 
-      bcrypt.compare(req.body.password, user.password, (err, result) => {
+      bcrypt.compare(bodyValidate.password, user.password, (err, result) => {
         if (err) {
           throw err;
         }
@@ -58,6 +78,7 @@ exports.user_login = (req, res, next) => {
             name: user.name,
             email: user.email,
             admin: user.admin,
+            estateAgent: user.estateAgent,
           },
           process.env.JWT_SECRET,
           { expiresIn: "24h" }
@@ -78,9 +99,9 @@ exports.user_list = (req, res, next) => {
   })
     .then((users) => {
       if (users.length === 0) {
-        return res.status(404).json({ message: "No users" });
+        return res.status(204).json({ message: "No users" });
       }
-      res.status(200).json(users);
+      res.status(201).json(users);
     })
     .catch((err) => console.log("error findAll", err));
 };
@@ -98,84 +119,90 @@ exports.user_detail = (req, res, next) => {
     .catch((err) => console.log("error findByPk", err));
 };
 
-exports.user_update = (req, res, next) => {
+exports.user_update = async (req, res, next) => {
   const token = req.headers.authorization.split(" ")[1];
-  const body = req.body;
 
-  jwt.verify(token, process.env.JWT_SECRET, function (err, decoded) {
-    if (err) {
-      throw err;
-    }
+  let bodyValidate = req.body;
+  bodyValidate = await bodyService.bodyValidator(bodyValidate);
 
-    if (!body.email || !body.name || !body.age || !body.phone) {
-      return res.status(400).json({ message: "Field required" });
-    }
+  if (!bodyValidate) {
+    return res.status(400).json({ message: "Field required" });
+  }
 
-    if (decoded.admin === false && decoded.id !== Number(req.params.id)) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
+  const decodedToken = tokenService.verifyToken(token);
+  if (!decodedToken) {
+    return res.status(401).json({ message: "Invalid token" });
+  }
 
-    User.findByPk(req.params.id)
-      .then((user) => {
-        if (!user) {
-          return res.status(404).json({ message: "User not found" });
-        }
+  if (
+    decodedToken.admin === false &&
+    decodedToken.id !== Number(req.params.id)
+  ) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
 
-        User.findOne({
-          where: {
-            email: body.email,
-          },
-        })
-          .then((userEmailExist) => {
-            if (userEmailExist) {
-              return res.status(409).json({ message: "Email exist" });
-            }
-            user
-              .update(req.body)
-              .then((userUpdated) => {
-                res.status(201).json(userUpdated);
-              })
-              .catch((error) => {
-                console.log("error userUpdated", error);
-              });
-          })
-          .catch((error) => {
-            console.log("error userEmailExist", error);
-          });
+  User.findByPk(req.params.id)
+    .then((user) => {
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      User.findOne({
+        where: {
+          email: bodyValidate.email,
+        },
       })
-      .catch((err) => console.log("error findOne", err));
-  });
+        .then((userEmailExist) => {
+          if (userEmailExist) {
+            return res.status(409).json({ message: "Email exist" });
+          }
+          user
+            .update(bodyValidate)
+            .then((userUpdated) => {
+              res.status(201).json(userUpdated);
+            })
+            .catch((error) => {
+              console.log("error userUpdated", error);
+            });
+        })
+        .catch((error) => {
+          console.log("error userEmailExist", error);
+        });
+    })
+    .catch((err) => console.log("error findOne", err));
 };
 
 exports.user_delete = (req, res, next) => {
   const token = req.headers.authorization.split(" ")[1];
+  const decodedToken = tokenService.verifyToken(token);
 
-  jwt.verify(token, process.env.JWT_SECRET, function (err, decoded) {
-    if (err) {
-      throw err;
-    }
+  if (!decodedToken) {
+    return res.status(401).json({ message: "Invalid token" });
+  }
 
-    if (decoded.admin === false && decoded.id !== Number(req.params.id)) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
+  if (
+    decodedToken.admin === false &&
+    decodedToken.id !== Number(req.params.id)
+  ) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
 
-    User.findByPk(req.params.id)
-      .then((user) => {
-        if (!user) {
-          return res.status(404).json({ message: "User not found" });
-        }
+  User.findByPk(req.params.id)
+    .then((user) => {
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
 
-        User.destroy({
-          attributes: ["id", "name"],
-          where: {
-            id: user.id,
-          },
-        })
-          .then(() => {
-            res.status(201).json({ message: `User ${user.name} deleted` });
-          })
-          .catch((err) => console.log("error destroy", err));
+      User.destroy({
+        attributes: ["id", "name"],
+        where: {
+          id: user.id,
+        },
       })
-      .catch((err) => console.log("error findOne", err));
-  });
+        .then(() => {
+          res.status(201).json({ message: `User ${user.name} deleted` });
+        })
+        .catch((err) => console.log("error destroy", err));
+    })
+    .catch((err) => console.log("error findOne", err));
 };

@@ -26,12 +26,6 @@ module.exports = {
           key: "id",
         },
       },
-      name: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        unique: true,
-        onUpdate: "CASCADE",
-      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
