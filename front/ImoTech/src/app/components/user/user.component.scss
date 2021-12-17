@@ -1,0 +1,29 @@
+.user-return-btn {
+  color: white;
+}
+
+.user-card {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 50%;
+  margin: 20px auto;
+  background-color: #1e2745;
+  color: white;
+
+  .user-content {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+  }
+
+  .user-btn {
+    color: #1e2745;
+
+    &:hover {
+      background-color: #1e2745;
+      color: white;
+    }
+  }
+}

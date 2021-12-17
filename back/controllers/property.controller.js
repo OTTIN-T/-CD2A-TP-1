@@ -1,6 +1,6 @@
+const { Op } = require("sequelize");
 const Property = require("../models").Property;
 const Tag = require("../models").Tag;
-const PropertyTag = require("../models").PropertyTag;
 const tokenService = require("../services/token.service");
 const bodyService = require("../services/body.service");
 
@@ -24,10 +24,12 @@ exports.property_add = async (req, res, next) => {
     return res.status(400).json({ message: "Field required" });
   }
 
-  let tags = [];
-  bodyValidate.tags.split(",").forEach((tag) => {
-    tags.push(Number(tag.trim()));
-  });
+  //Fonctionne très bien avec le front,
+  //mais ne fonctionne pas sur Postman sans faire cette modif...
+  // let tags = [];
+  // bodyValidate.tags.split(",").forEach((tag) => {
+  //   tags.push(Number(tag.trim()));
+  // });
 
   if (req.file) {
     bodyValidate.picture = `public/upload/property/${req.file.filename.trim()}`;
@@ -48,7 +50,7 @@ exports.property_add = async (req, res, next) => {
       Property.create(bodyValidate)
         .then((propertyCreated) => {
           propertyCreated
-            .setTags(tags)
+            .setTags(bodyValidate.tags)
             .then(() => {
               res.status(201).json(propertyCreated);
             })
@@ -65,7 +67,7 @@ exports.property_add = async (req, res, next) => {
 
 exports.property_list = (req, res, next) => {
   Property.findAll({
-    attributes: ["id", "title", "address", "price"],
+    attributes: ["id", "title", "address", "price", "sector"],
     include: [
       {
         model: Tag,
@@ -97,8 +99,8 @@ exports.property_detail = (req, res, next) => {
     ],
     include: [
       {
-        model: PropertyTag,
-        attributes: ["id", "PropertyId", "TagId"],
+        model: Tag,
+        attributes: ["id", "name"],
       },
     ],
   })
@@ -109,6 +111,52 @@ exports.property_detail = (req, res, next) => {
       res.status(200).json(property);
     })
     .catch((error) => console.log("error findByPk", error));
+};
+
+exports.search_tag_property = (req, res, next) => {
+  Property.findAll({
+    attributes: ["id", "title", "price", "description"],
+    include: [
+      {
+        model: Tag,
+        attributes: ["id", "name"],
+        where: {
+          name: {
+            [Op.substring]: req.params.tag,
+          },
+        },
+      },
+    ],
+  })
+    .then((properties) => {
+      res.status(200).json(properties);
+    })
+    .catch((err) => {
+      console.log("err", err);
+    });
+};
+
+exports.search_property = (req, res, next) => {
+  Property.findAll({
+    attributes: ["id", "title", "price", "description"],
+    include: [
+      {
+        model: Tag,
+        attributes: ["id", "name"],
+      },
+    ],
+    where: {
+      title: {
+        [Op.substring]: req.params.search,
+      },
+    },
+  })
+    .then((properties) => {
+      res.status(200).json(properties);
+    })
+    .catch((err) => {
+      console.log("err", err);
+    });
 };
 
 exports.property_update = async (req, res, next) => {
@@ -124,6 +172,7 @@ exports.property_update = async (req, res, next) => {
   }
 
   let bodyValidate = req.body;
+  console.log("bodyValidate", bodyValidate);
 
   Property.findByPk(req.params.id)
     .then(async (property) => {
@@ -152,7 +201,7 @@ exports.property_update = async (req, res, next) => {
         },
       })
         .then((propertyName) => {
-          if (propertyName) {
+          if (propertyName && propertyName.id !== property.id) {
             return res
               .status(409)
               .json({ message: "Property name already exist" });
@@ -160,7 +209,14 @@ exports.property_update = async (req, res, next) => {
           property
             .update(bodyValidate)
             .then((property) => {
-              res.status(200).json(property);
+              property
+                .setTags(bodyValidate.tags)
+                .then(() => {
+                  res.status(200).json(property);
+                })
+                .catch((err) => {
+                  console.log("err set tags", err);
+                });
             })
             .catch((error) => {
               console.log("error update", error);

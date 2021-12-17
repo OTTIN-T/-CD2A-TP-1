@@ -1,0 +1,61 @@
+<h1 class="user-title">ImmoTech</h1>
+<h2 class="user-subtitle">Création de compte</h2>
+
+<mat-card class="user-container">
+     <form [formGroup]="userForm" action="" (ngSubmit)="submit()">
+          <mat-form-field>
+               <mat-label class="user-label" for="name">name:</mat-label>
+               <input class="user-input" matInput type="text" id="name" formControlName="name" required><br>
+               <mat-error>Champ requis</mat-error>
+          </mat-form-field><br>
+
+          <mat-form-field>
+               <mat-label class="user-label" for="email">email: </mat-label>
+               <input class="user-input" matInput type="text" id="email" formControlName="email" required>
+               <mat-error>Mauvais format</mat-error>
+          </mat-form-field><br>
+
+          <mat-form-field>
+               <mat-label class="user-label" for="password">password: </mat-label>
+               <input class="user-input" matInput type="text" id="password" formControlName="password" required>
+               <mat-error>Mauvais format</mat-error>
+          </mat-form-field><br>
+
+          <mat-form-field>
+               <mat-label class="user-label" for="age">age: </mat-label>
+               <input class="user-input" matInput type="number" id="age" formControlName="age" required>
+               <mat-error>Mauvais format</mat-error>
+          </mat-form-field><br>
+
+          <mat-form-field>
+               <mat-label class="user-label" for="phone">phone: </mat-label>
+               <input class="user-input" matInput type="text" id="phone" formControlName="phone" required>
+               <mat-error>Mauvais format</mat-error>
+          </mat-form-field><br>
+
+
+          <mat-form-field>
+               <mat-label class="user-label" for="picture">picture: </mat-label>
+               <ngx-mat-file-input id="picture" formControlName="picture" webkitdirectory>
+               </ngx-mat-file-input>
+               <mat-error>Mauvais format</mat-error>
+          </mat-form-field><br>
+
+          <section class="user-section" *ngIf="admin">
+               <mat-checkbox formControlName="admin">admin</mat-checkbox>
+               <mat-checkbox formControlName="estateAgent">estateAgent</mat-checkbox>
+          </section><br>
+
+          <button class="user-btn" mat-raised-button type="submit" [disabled]="!userForm.valid">Submit</button>
+     </form>
+
+     <div>
+          {{error}}
+     </div>
+
+     <div class="user-aside" *ngIf="estateAgent">
+          <p>Nouvel Agent</p>
+     </div>
+</mat-card>
+v
+<!-- Status: {{ userForm.status}} -->

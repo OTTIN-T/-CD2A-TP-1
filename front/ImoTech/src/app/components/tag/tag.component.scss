@@ -1,0 +1,15 @@
+.tag-card {
+  display: flex;
+  justify-content: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 20px auto;
+  max-width: 45px;
+  width: auto;
+
+  .tag-content {
+    //     display: flex;
+    //     justify-content: center;
+  }
+}

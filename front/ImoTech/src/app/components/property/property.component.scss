@@ -1,0 +1,32 @@
+.property-return-btn {
+  color: white;
+}
+
+.property-card {
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+  width: 40%;
+  height: auto;
+  margin: 20px auto;
+  background-color: #1e2745;
+  color: white;
+  padding: 61px;
+
+  .property-subtitle {
+    display: flex;
+    justify-content: center;
+    color: white !important;
+  }
+
+  .property-btn {
+    color: #1e2745;
+
+    &:hover {
+      background-color: #1e2745;
+      color: white;
+    }
+  }
+}

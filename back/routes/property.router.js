@@ -18,6 +18,8 @@ const upload = multer({ storage });
 router.post("/", upload.single("picture"), property_controller.property_add);
 router.get("/", property_controller.property_list);
 router.get("/:id", property_controller.property_detail);
+router.get("/search/tag/:tag", property_controller.search_tag_property);
+router.get("/search/:search", property_controller.search_property);
 router.put(
   "/:id",
   upload.single("picture"),

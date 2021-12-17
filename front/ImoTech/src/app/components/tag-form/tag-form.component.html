@@ -1,0 +1,15 @@
+<h1 class="tag-title">ImmoTech</h1>
+<h2 class="tag-subtitle">Création de tag</h2>
+
+<mat-card class="tag-container">
+     <form [formGroup]="tagForm" action="" (ngSubmit)="submit()">
+          <mat-form-field>
+               <mat-label class="tag-label" for="name">name:</mat-label>
+               <input class="tag-input" matInput type="text" id="name" formControlName="name" required><br>
+               <mat-error>Champ requis</mat-error>
+          </mat-form-field><br>
+          <button class="tag-btn" mat-raised-button type="submit" [disabled]="!tagForm.valid">Submit</button>
+     </form>
+     <div>{{ errorMessage }}</div>
+</mat-card>
+<!-- Status: {{ userForm.status}} -->

@@ -1,0 +1,60 @@
+.property-title,
+.property-subtitle {
+  display: flex;
+  justify-content: center;
+  color: white;
+}
+
+.property-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 70vh;
+  width: 50vh;
+  background-color: #1e2745;
+  margin: 10vh auto;
+  color: white;
+
+  .property-label {
+    border-color: white;
+    color: white;
+
+    &:focus {
+      border-color: white;
+    }
+  }
+
+  .property-input {
+    color: white;
+  }
+
+  .property-btn {
+    display: flex;
+    margin: 20% auto;
+    color: #1e2745;
+
+    &:hover {
+      background-color: #1e2745;
+      color: white;
+    }
+  }
+
+  .property-aside {
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+
+    .property-aside-btn {
+      background-color: white;
+      color: #1e2745;
+
+      &:hover {
+        background-color: #1e2745;
+        color: white;
+      }
+    }
+  }
+}

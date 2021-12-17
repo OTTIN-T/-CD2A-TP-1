@@ -1,0 +1,29 @@
+<h1 class="login-title">ImmoTech</h1>
+
+<mat-card class="login-container">
+     <h2>LOGIN</h2>
+     <form [formGroup]="userForm" (ngSubmit)="login()" action="" method="post">
+          <mat-form-field>
+               <mat-label class="login-label" for="email">Email:</mat-label>
+               <input class="login-input" matInput type="text" id="email" formControlName="email" required><br>
+               <mat-error>Champ requis</mat-error>
+          </mat-form-field><br>
+
+          <mat-form-field>
+               <mat-label class="login-label" for="password">Password:</mat-label>
+               <input class="login-input" matInput type="text" id="password" formControlName="password" required><br>
+               <mat-error>Champ requis</mat-error>
+          </mat-form-field><br>
+
+
+          <button class="login-btn" mat-raised-button type="submit" [disabled]="!userForm.valid">Connection</button>
+     </form>
+     <div>
+          {{ errorMessage}}
+     </div>
+     <div class="login-aside">
+          <p>Pas encore inscrit ?</p>
+          <button class="login-aside-btn" mat-raised-button [routerLink]="['/user/add']"
+               routerLinkActive="router-link-active">inscription</button>
+     </div>
+</mat-card>

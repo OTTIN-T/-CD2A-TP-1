@@ -1,0 +1,73 @@
+<h1 class="property-title">ImmoTech</h1>
+<h2 class="property-subtitle">Création d'annonce</h2>
+
+<mat-card class="property-container">
+     <form [formGroup]="propertyForm" action="" (ngSubmit)="submit()">
+          <mat-form-field>
+               <mat-label class="property-label" for="title">title:</mat-label>
+               <input class="property-input" matInput type="text" id="title" formControlName="title" required><br>
+               <mat-error>Champ requis</mat-error>
+          </mat-form-field><br>
+
+          <mat-form-field>
+               <mat-label class="property-label" for="address">address: </mat-label>
+               <input class="property-input" matInput type="text" id="address" formControlName="address" required>
+               <mat-error>Mauvais format</mat-error>
+          </mat-form-field><br>
+
+          <mat-form-field>
+               <mat-label class="property-label" for="price">price: </mat-label>
+               <input class="property-input" matInput type="number" id="price" formControlName="price" required>
+               <mat-error>Mauvais format</mat-error>
+          </mat-form-field><br>
+
+          <mat-form-field>
+               <mat-label class="property-label" for="sector">sector: </mat-label>
+               <input class="property-input" matInput type="text" id="sector" formControlName="sector" required>
+               <mat-error>Mauvais format</mat-error>
+          </mat-form-field><br>
+
+          <mat-form-field>
+               <mat-label class="property-label" for="room">room: </mat-label>
+               <input class="property-input" matInput type="number" id="room" formControlName="room" required>
+               <mat-error>Mauvais format</mat-error>
+          </mat-form-field><br>
+
+          <mat-form-field>
+               <mat-label class="property-label" for="picture">picture: </mat-label>
+               <ngx-mat-file-input id="picture" formControlName="picture" webkitdirectory>
+               </ngx-mat-file-input>
+               <mat-error>Mauvais format</mat-error>
+          </mat-form-field><br>
+
+          <mat-form-field>
+               <mat-label class="property-label" for="description">description: </mat-label>
+               <input class="property-input" matInput type="text" id="description" formControlName="description"
+                    required>
+               <mat-error>Mauvais format</mat-error>
+          </mat-form-field><br>
+
+
+          <mat-form-field>
+               <mat-label class="property-label" for="advantage">advantage: </mat-label>
+               <input class="property-input" matInput type="text" id="advantage" formControlName="advantage" required>
+               <mat-error>Mauvais format</mat-error>
+          </mat-form-field><br>
+
+          <mat-form-field appearance="fill">
+               <mat-label class="property-label">Tags:</mat-label>
+               <mat-select matNativeControl required formControlName="tags" multiple>
+                    <mat-select-trigger *ngFor="let tag of tags">
+                         <span> {{tag.name ? tag.name : ''}},</span>
+                    </mat-select-trigger>
+                    <mat-option *ngFor="let tag of tags" [value]="tag.id">{{tag.name}}</mat-option>
+               </mat-select>
+          </mat-form-field>
+
+          <button class="property-btn" mat-raised-button type="submit" [disabled]="!propertyForm.valid">Submit</button>
+     </form>
+
+     <div>
+          {{ errorMessage }}
+     </div>
+</mat-card>

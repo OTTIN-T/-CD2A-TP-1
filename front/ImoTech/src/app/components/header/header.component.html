@@ -1,0 +1,25 @@
+<div>
+     <button mat-button [matMenuTriggerFor]="menu" class="header-btn">Menu</button>
+     <mat-menu #menu="matMenu">
+          <button mat-menu-item [routerLink]="['/home']" routerLinkActive="router-link-active">Accueil</button>
+          <button *ngIf="token" mat-menu-item [routerLink]="['/user', id]"
+               routerLinkActive="router-link-active">Profil</button>
+          <button *ngIf="token" mat-menu-item [routerLink]="['/property']" routerLinkActive="router-link-active">List
+               d'annonce</button>
+          <button *ngIf="(admin || estateAgent) && token" mat-menu-item [routerLink]="['/property/add']"
+               routerLinkActive="router-link-active">Ajouter une
+               Annonce</button>
+          <button *ngIf="admin && token" mat-menu-item [routerLink]="['/user/add']"
+               routerLinkActive="router-link-active && token">Ajouter
+               un
+               agent</button>
+          <button *ngIf="(admin || estateAgent) && token" mat-menu-item [routerLink]="['/tags/list']"
+               routerLinkActive="router-link-active">Tag
+               liste</button>
+          <button *ngIf="(admin || estateAgent) && token" mat-menu-item [routerLink]="['/tag/add']"
+               routerLinkActive="router-link-active">Ajouter
+               un
+               tag</button>
+          <button mat-menu-item [routerLink]="['/login']" routerLinkActive="router-link-active">Deconnexion</button>
+     </mat-menu>
+</div>

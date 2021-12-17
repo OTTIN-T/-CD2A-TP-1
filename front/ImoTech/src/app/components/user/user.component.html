@@ -1,0 +1,22 @@
+<button class="user-return-btn" mat-button [routerLink]="['/home']" routerLinkActive="router-link-active" *ngIf="id">
+     Retour
+</button>
+
+<mat-card class="user-card">
+     <mat-card-header>
+          <mat-card-title>Nom: {{ user?.name}}</mat-card-title>
+     </mat-card-header>
+     <img mat-card-sm-image src="{{ user?.picture }}" alt="user picture">
+     <mat-card-content class="user-content" *ngIf="id">
+          <span>Numéro: {{user?.phone}}</span>
+          <span>Email: {{user?.email}}</span>
+     </mat-card-content>
+     <mat-card-actions *ngIf="!id">
+          <button mat-button [routerLink]="['/user', user?.id]" routerLinkActive="router-link-active">Infos</button>
+     </mat-card-actions>
+     <mat-card-actions *ngIf="id">
+          <button class="user-btn" mat-raised-button (click)="deleteUser(id)">X</button>
+          <button class="user-btn" mat-raised-button [routerLink]="['/user', id, 'edit']"
+               routerLinkActive="router-link-active">Modifier</button>
+     </mat-card-actions>
+</mat-card>
